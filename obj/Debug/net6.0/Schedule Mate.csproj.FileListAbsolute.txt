@@ -1,0 +1,51 @@
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\appsettings.Development.json
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\appsettings.json
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\Schedule Mate.staticwebassets.runtime.json
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\Schedule Mate.exe
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\Schedule Mate.deps.json
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\Schedule Mate.runtimeconfig.json
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\Schedule Mate.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\Schedule Mate.pdb
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\Schedule Mate.GeneratedMSBuildEditorConfig.editorconfig
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\Schedule Mate.AssemblyInfoInputs.cache
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\Schedule Mate.AssemblyInfo.cs
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\Schedule Mate.csproj.CoreCompileInputs.cache
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\Schedule Mate.MvcApplicationPartsAssemblyInfo.cache
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\Schedule Mate.RazorAssemblyInfo.cache
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\Schedule Mate.RazorAssemblyInfo.cs
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\staticwebassets.build.json
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\staticwebassets.development.json
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\scopedcss\bundle\Schedule Mate.styles.css
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\scopedcss\projectbundle\Schedule Mate.bundle.scp.css
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\Schedule Mate.dll
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\refint\Schedule Mate.dll
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\Schedule Mate.pdb
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\Schedule Mate.genruntimeconfig.cache
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\ref\Schedule Mate.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\Microsoft.Extensions.Caching.Abstractions.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\Microsoft.Extensions.Caching.Memory.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\Microsoft.Extensions.DependencyInjection.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\Microsoft.Extensions.Logging.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\Microsoft.Extensions.Logging.Abstractions.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\Microsoft.Extensions.Options.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\Microsoft.Extensions.Primitives.dll
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\Schedule Mate.csproj.AssemblyReference.cache
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\Schedule Mate.csproj.CopyComplete
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\AWSSDK.Core.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\AWSSDK.SecurityToken.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\DnsClient.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\MongoDB.Bson.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\MongoDB.Driver.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\MongoDB.Driver.Core.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\MongoDB.Libmongocrypt.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\SharpCompress.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\Snappier.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\ZstdSharp.dll
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\runtimes\linux\native\libmongocrypt.so
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\runtimes\osx\native\libmongocrypt.dylib
+D:\Asp.net core\Schedule Mate\bin\Debug\net6.0\runtimes\win\native\mongocrypt.dll
+D:\Asp.net core\Schedule Mate\obj\Debug\net6.0\scopedcss\Views\Shared\StatsticsLayout.cshtml.rz.scp.css

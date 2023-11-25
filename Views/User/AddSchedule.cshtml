@@ -1,0 +1,249 @@
+@using Schedule_Mate.Models
+
+@{
+    ViewBag.Title="Add Schedule";
+}
+
+@*Model for binding data*@
+@model CollectionSchedule
+
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    @* <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> *@
+
+    @* <title>Add Schedule</title> *@
+
+    @* <link rel="stylesheet" href="~/css/style.css" /> *@
+
+    @*Google Fonts CDN*@
+    @* <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"> *@
+
+    @*Bootstrap CDN*@
+    @* <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous"> *@
+
+    <style>
+        .mt{
+            margin-top: 2rem;
+        }
+
+        .badge-container{
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main" style="height: 80vh;">
+        @*Boostrap Modal for showing alert.*@
+        <div class="modal fade" id="errorModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">@*Modal title goes here..*@</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                <p id='errMsg'>@*Modal body text goes here..*@</p>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Ok</button>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        @*Boostrap Card*@
+        <div class='card'>
+
+            @*Card header component*@
+            <div class='card-header'>
+                <h1 class="card-title">Add Schedule</h1>
+            </div>
+
+            @*Html form using HTML helper for Adding Schedule*@
+            @*After form submit data will sent to "User" controller's "Login" action*@
+            @using (@Html.BeginForm("AddSchedule", "User", FormMethod.Post, new { @class = "row",onsubmit="return validateForm()" @*If 'validateForm()' return's false then form will not submit*@ }))
+            {
+
+                @*Card body component*@
+                <div class='card-body row'>
+
+                    <div class="col-md-12">
+                        <label for="ScheduleName" class="form-label">Schedule Name</label>
+                        @*Html helpers with lambda exprestion to bind the data with model*@
+                        @* "a => a.FieldName" is lambda exprestion*@
+                        @Html.TextBoxFor(a => a.ScheduleName,new { @class="form-control" , placeholder="Schedule Name",@id="scheduleName" })
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="Task" class="form-label">Task Name</label>
+                        <input type="text" name="Task" class="form-control"  id="taskName" placeholder="Task"/>
+                    </div>
+
+                    <div class="col-md-5">
+
+                        <label for="Duration" class="form-label">Duration</label>
+                        <div class="input-group mb-3">
+                            <input type="number" class="form-control" id="taskHours" value="0" placeholder="hh">
+                            <span class="input-group-text">hh</span>
+                            <input type="text" class="form-control" id="taskMins" value="0" placeholder="mm">
+                            <span class="input-group-text">mm</span>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-3">
+                        <button type="button" class="btn btn-outline-dark mt" onclick="addTask()">Add Task</button>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="row" id="taskContainer">
+                        </div>
+                    </div>
+                </div>
+
+                @*Card footer component*@
+                <div class="card-footer">
+
+                    @Html.HiddenFor(a=>a.TaskList,new {@id="taskList"})
+                    <input type="submit" name="addSchedule" value="Add Schedule" class="btn btn-outline-primary" />
+
+                </div>
+            }
+
+        </div>
+    </div>
+
+    <script src="~/js/site.js"></script>
+
+    <script>
+        const taskList=[]
+
+        function addTaskBadge(){
+            taskBadge = '';
+
+            colorArray=["primary","secondary","success","danger","info","warning"]
+            let count=0;
+            taskList.map( task =>{
+                const rndInt = Math.floor(Math.random() * 6) 
+                taskBadge += `
+                    <div class="col-md-4 badge-container">
+                        <span class="badge rounded-pill text-bg-${colorArray[rndInt]}">
+                            ${task.taskName}
+                            <button type="button" id="${count}" onclick="removeTask(event)" class="btn-close"></button>
+                        </span>
+                    </div>`
+                    count++;
+            })
+
+            taskContainer.innerHTML=taskBadge
+        }
+
+        function removeTask(event){
+            taskList.splice(event.target.id,1)
+            addTaskBadge()
+        }
+
+        function addTask(){
+            let modelTitleElement = document.querySelector('#staticBackdropLabel')
+            let errMsgElemet = document.querySelector('#errMsg')
+            let errorModal = new bootstrap.Modal(document.querySelector('#errorModal'), {
+                keyboard: false
+            })
+            let errorMsg = ''
+            let modalTitle = ''
+            let taskName=document.querySelector('#taskName').value
+            let taskHours=document.querySelector('#taskHours').value
+            let taskMins=document.querySelector('#taskMins').value
+            let taskContainer=document.querySelector('#taskContainer')
+            let flag=true
+
+            taskMinToHour=Math.floor(taskMins/60)
+            taskMins=taskMins%60
+            taskHours=Number(taskHours)+Number(taskMinToHour)
+
+            if(!patternValidator('name',taskName)){
+                modalTitle='Invalid task name!'
+                errorMsg='Please enter valid task name.'
+                flag=false
+            } else if(taskHours===''){
+                modalTitle='Invalid task duration!'
+                errorMsg='Please enter valid task duration.'
+                flag=false
+            } else if(taskMins===''){
+                modalTitle='Invalid task duration!'
+                errorMsg='Please enter valid task duration.'
+                flag=false
+            } else if(Number(taskHours)<=0 && Number(taskMins)<=0){
+                modalTitle='Invalid Duration!'
+                errorMsg='Please enter valid time duration.' 
+                flag=false
+            } else if( Number(taskHours)>=12 && Number(taskMins)>0){
+                modalTitle='Invalid Duration!'
+                errorMsg='Time duration can not exceed 12 hours.' 
+                flag=false
+            }
+
+            if(!flag){
+                errMsgElemet.innerHTML = errorMsg
+                modelTitleElement.innerHTML = modalTitle
+                errorModal.show()
+                return
+            }
+
+            duration=`${taskHours} Hour : ${taskMins} Minutes`
+            
+            taskList.push({taskName,duration})
+
+            document.querySelector('#taskList').value = JSON.stringify(taskList)
+
+            addTaskBadge();
+        }
+
+        function validateForm(){
+            let modelTitleElement = document.querySelector('#staticBackdropLabel')
+            let errMsgElemet = document.querySelector('#errMsg')
+            let errorModal = new bootstrap.Modal(document.querySelector('#errorModal'), {
+                keyboard: false
+            })
+            let errorMsg = ''
+            let modalTitle = ''
+            let scheduleName=document.querySelector('#scheduleName').value
+            let flag=true
+
+            if(!patternValidator('name',scheduleName)){
+                modalTitle='Invalid Schedule Name!'
+                errorMsg='Please enter valid schedule name.' 
+                flag=false
+            } else if(taskList.length < 1){
+                modalTitle='Insufficient task!'
+                errorMsg='Please enter atleast 1 task in list.' 
+                flag=false
+            }
+
+            if(!flag){
+                errMsgElemet.innerHTML = errorMsg
+                modelTitleElement.innerHTML = modalTitle
+                errorModal.show()
+            }
+
+            return flag;
+        }
+    </script>
+
+    @*Bootstrap JavaScript CDN*@
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>

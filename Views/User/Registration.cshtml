@@ -1,0 +1,287 @@
+@using Schedule_Mate.Models
+
+@{
+    Layout = null;
+}
+
+@*Model for binding data*@
+@model CollectionUser
+
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Registration Page</title>
+
+    <link rel="stylesheet" href="~/css/style.css" />
+
+    @*Google Fonts CDN*@
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    @*Bootstrap CDN*@
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+
+    <style>
+        body {
+            justify-content: center;
+            aligin-items: center;
+        }
+
+        .container-img {
+            width: 38vw;
+            height: auto;
+            display: flex;
+            gap: 20px;
+            overflow-x: scroll;
+            overflow-y: hidden;
+        }
+
+        img {
+            /*padding: 10px 0;*/
+            box-sizing: border-box;
+            border-radius: 30%;
+            min-width: 60px;
+            min-height: 60px;
+            object-fit: cover;
+        }
+
+        .selected img {
+            border: 0.33rem solid red;
+            /*padding: 10px 0;*/
+            box-sizing: border-box;
+            border-radius: 30%;
+            min-width: 60px;
+            min-height: 60px;
+            object-fit: cover;
+        }
+    </style>
+
+</head>
+
+<body class="main" style="height:100vh">
+    @*Boostrap Modal for showing alert.*@
+    <div class="modal fade" id="errorModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">@*Modal title goes here..*@</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id='errMsg'>@*Modal body text goes here..*@</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Boostrap Card*@
+    <div class='card'>
+
+        @*Card header component*@
+        <div class='card-header'>
+            <h1 class="card-title">Register</h1>
+        </div>
+
+        @*Html form using HTML helper for Registration*@
+        @*After form submit data will sent to "User" controller's "Register" action*@
+        @using (@Html.BeginForm("Registration", "User", FormMethod.Post, new
+        {
+            @class = "row",
+            onsubmit = "return validateForm()"
+            @*If 'validateForm()' return's false then form will not submit*@
+        }))
+        {
+
+            @*Card body component*@
+            <div class='card-body'>
+
+                <label for="Name" class="form-label">Name</label>
+                @*Html helpers with lambda exprestion to bind the data with model*@
+                @* "a => a.FieldName" is lambda exprestion*@
+                @Html.TextBoxFor(a=>a.Name ,new{@id="name",@class="form-control",placeholder="Name"})
+
+                <label for="Email" class="form-label">E-mail</label>
+                <div class="input-group mb-3">
+                    @Html.TextBoxFor(a => a.Email,new {@id="email", @class="form-control" , placeholder="E-mail" })
+                    <span class="input-group-text">&#64email.com</span>
+                </div>
+
+                <label for="Password" class="form-label">Password</label>
+                @Html.PasswordFor(a=>a.Password ,new{@id="password",@class="form-control",placeholder="Password"})
+
+                <label for="ConfirmPassword" class="form-label">Confirm Password</label>
+                <input type="password" name="confirm_pwd" id="confirm_pwd" class="form-control"
+                    placeholder="Confirm Password">
+
+                @*Image option container*@
+                <div class="container-img" style="margin-top: 0.5rem">
+                    <div class='img-container' id="img1">
+                        <img src="~/images/profile/img1.png" class="img-fluid">
+                    </div>
+                    <div class="img-container" id="img2">
+                        <img class="img-fluid" src="~/images/profile/img2.png">
+                    </div>
+                    <div class='img-container' id="img3">
+                        <img src="~/images/profile/img3.png" class="img-fluid">
+                    </div>
+                    <div class="img-container" id="img4">
+                        <img class="img-fluid" src="~/images/profile/img4.png">
+                    </div>
+                    <div class='img-container' id="img5">
+                        <img src="~/images/profile/img5.png" class="img-fluid">
+                    </div>
+                    <div class="img-container" id="img6">
+                        <img class="img-fluid" src="~/images/profile/img6.png">
+                    </div>
+                    <div class='img-container' id="img7">
+                        <img src="~/images/profile/img7.png" class="img-fluid">
+                    </div>
+                    <div class="img-container" id="img8">
+                        <img class="img-fluid" src="~/images/profile/img8.png">
+                    </div>
+                    <div class="img-container" id="img9">
+                        <img class="img-fluid" src="~/images/profile/img9.png">
+                    </div>
+                </div>
+
+            </div>
+
+            @*Card footer component*@
+            <div class="card-footer">
+
+                @Html.HiddenFor(a=>a.ProfilePic,new{id="image"})
+
+                <input type="submit" name="register" value="Register" class="btn btn-outline-primary" />
+
+                Already have an account? @Html.ActionLink("Login","Login","User")
+
+            </div>
+        }
+
+    </div>
+
+    <script src="~/js/site.js"></script>
+
+    <script>
+
+        //function for validating the form
+        function validateForm() {
+            let flag = true;
+            let name = document.querySelector('#name').value.trim()
+            let email = document.querySelector('#email').value
+            let password = document.querySelector('#password').value
+            let confirm_pwd = document.querySelector('#confirm_pwd').value
+            let profileImg = document.querySelector('#image').value
+            let modelTitleElement = document.querySelector('#staticBackdropLabel')
+            let errMsgElemet = document.querySelector('#errMsg')
+            let errorModal = new bootstrap.Modal(document.querySelector('#errorModal'), {
+                keyboard: false
+            })
+            let errorMsg = ''
+            let modalTitle = ''
+
+            if (!patternValidator('name', name)) {
+                modalTitle = 'Invalid name!'
+                errorMsg = 'Please enter valid name.'
+                flag = false
+            } else if (!patternValidator('email', email)) {
+                modalTitle = 'Invalid email!'
+                errorMsg = 'Please enter valid email.'
+                flag = false
+            } else if (!patternValidator('pwd', password)) {
+                modalTitle = 'Invalid password!'
+                errorMsg = 'Password should contain minimum 8 characters, at least one uppercase letter, one lowercase letter, one special character, and one number.'
+                flag = false
+            } else if (!patternValidator('pwd', confirm_pwd)) {
+                modalTitle = 'Invalid password!'
+                errorMsg = 'Confirm password should contain minimum 8 characters, at least one uppercase letter, one lowercase letter, one special character, and one number.'
+                flag = false
+            } else if (password !== confirm_pwd) {
+                modalTitle = 'Password mismatch!'
+                errorMsg = 'Password and Confirm password should be same.'
+                flag = false
+            }
+
+            if (!flag) {
+                errMsgElemet.innerHTML = errorMsg
+                modelTitleElement.innerHTML = modalTitle
+                errorModal.show()
+            }
+
+            return flag;
+        }
+
+        //function for adding class "selected" in which user select's the image
+        function selectedImageChecker() {
+            const imageName = document.getElementById('image').value.split('.')[0];
+            const imgCount = imageName[imageName.length - 1];
+            console.log(imgCount)
+            console.log(imageName)
+            for (let i = 1; i < 10; i++) {
+                if (i != imgCount) {
+                    document.querySelector(`#img${i}`).classList.remove('selected');
+                } else {
+                    document.querySelector(`#img${i}`).classList.add('selected')
+                }
+            }
+        }
+
+        //for adding event listner for checking the selected image
+        for (let i = 1; i < 10; i++) {
+            document.querySelector(`#img${i}`).addEventListener('click', () => {
+                document.getElementById('image').setAttribute("value", `img${i}.png`);
+                selectedImageChecker();
+            })
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            selectedImageChecker()
+        })
+        /* document.querySelector("#img1").addEventListener("click", function () {
+            document.getElementById("image").setAttribute("value", "img1.png")
+        })
+        document.querySelector("#img2").addEventListener("click", function () {
+            document.getElementById("image").setAttribute("value", "img2.png")
+        })
+        document.querySelector("#img3").addEventListener("click", function () {
+            document.getElementById("image").setAttribute("value", "img3.png")
+        })
+        document.querySelector("#img4").addEventListener("click", function () {
+            document.getElementById("image").setAttribute("value", "img4.png")
+        })
+        document.querySelector("#img5").addEventListener("click", function () {
+            document.getElementById("image").setAttribute("value", "img5.png")
+        })
+        document.querySelector("#img6").addEventListener("click", function () {
+            document.getElementById("image").setAttribute("value", "img6.png")
+        })
+        document.querySelector("#img7").addEventListener("click", function () {
+            document.getElementById("image").setAttribute("value", "img7.png")
+        })
+        document.querySelector("#img8").addEventListener("click", function () {
+            document.getElementById("image").setAttribute("value", "img8.png")
+        })
+        document.querySelector("#img9").addEventListener("click", function () {
+            document.getElementById("image").setAttribute("value", "img9.png")
+        }) */
+    </script>
+
+    @*Bootstrap JavaScript CDN*@
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>

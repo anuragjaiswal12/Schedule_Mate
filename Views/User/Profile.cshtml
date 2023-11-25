@@ -1,0 +1,252 @@
+@using Schedule_Mate.Models
+
+@{
+    ViewBag.Title = "Profile";
+}
+
+@model CollectionUser
+
+<!doctype html>
+<html lang="en">
+    <style>
+        .container-img {
+            width: 30vw;
+            height: auto;
+            display: flex;
+            gap: 20px;
+            overflow-x: scroll;
+            overflow-y: hidden;
+        }
+
+        img {
+            /*padding: 10px 0;*/
+            box-sizing: border-box;
+            border-radius: 30%;
+            min-width: 60px;
+            min-height: 60px;
+            object-fit: cover;
+        }
+
+        .selected img {
+            border: 0.33rem solid red;
+            /*padding: 10px 0;*/
+            box-sizing: border-box;
+            border-radius: 30%;
+            min-width: 60px;
+            min-height: 60px;
+            object-fit: cover;
+        }
+        .pic-input{
+            margin-top: 1rem;
+        }
+        .modal-body{
+            padding: 2rem;
+        }
+    </style>
+<body style="background-color: silver;">
+    <div class="main" style="height: 80vh;">
+
+        <div class="modal fade" id="errorModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="pwdErrTitle"></h1>
+                    </div>
+                    <div class="modal-body">
+                        <p id='pwdErrMsg'></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button data-bs-dismiss="modal" class="btn btn-outline-primary" >Ok</button>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*Boostrap Modal for showing alert.*@
+        <div class="modal fade" id="updatePasswordModal"  data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Update Password</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                        <div class="modal-body row">
+                            <label for="OldPassword" class="form-label">Old Password</label>
+                            <input type="password" name="oldPassword" class="form-control" id="oldPwd"/>
+                            <label for="NewPassword" class="form-label">New Password</label>
+                            <input type="password" name="newPassword" class="form-control" id="newPwd"/>
+                            <label for="ConfirmPassword" class="form-label">Confirm Password</label>
+                            <input type="password" name="confirmPassword" class="form-control" id="confirmPwd"/>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" onclick="updatePassword()" data-bs-dismiss="modal" class="btn btn-outline-primary" >Update Password</button>
+                        </div>
+                </div>
+            </div>
+        </div>
+
+        @*Boostrap Modal for showing alert.*@
+        <div class="modal fade" id="updateProfileModel" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Update Profile</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    @using (@Html.BeginForm("UpdateProfile", "User", FormMethod.Post, new
+                    {
+                        @class = "row"
+                    }))
+                    {
+                        <div class="modal-body">
+                            <label for="Name">Name</label>
+                            @Html.TextBoxFor(a => a.Name, new {id="name", @class = "form-control", placeholder = "Your Name" })
+                            <div class="pic-input">
+                                <label for="ProfilePic">Profile Picture</label>
+                                @*Image option container*@
+                                <div class="container-img" style="margin-top: 0.5rem">
+                                    <div class='img-container' id="img1">
+                                        <img src="~/images/profile/img1.png" class="img-fluid">
+                                    </div>
+                                    <div class="img-container" id="img2">
+                                        <img class="img-fluid" src="~/images/profile/img2.png">
+                                    </div>
+                                    <div class='img-container' id="img3">
+                                        <img src="~/images/profile/img3.png" class="img-fluid">
+                                    </div>
+                                    <div class="img-container" id="img4">
+                                        <img class="img-fluid" src="~/images/profile/img4.png">
+                                    </div>
+                                    <div class='img-container' id="img5">
+                                        <img src="~/images/profile/img5.png" class="img-fluid">
+                                    </div>
+                                    <div class="img-container" id="img6">
+                                        <img class="img-fluid" src="~/images/profile/img6.png">
+                                    </div>
+                                    <div class='img-container' id="img7">
+                                        <img src="~/images/profile/img7.png" class="img-fluid">
+                                    </div>
+                                    <div class="img-container" id="img8">
+                                        <img class="img-fluid" src="~/images/profile/img8.png">
+                                    </div>
+                                    <div class="img-container" id="img9">
+                                        <img class="img-fluid" src="~/images/profile/img9.png">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer">
+                            @Html.HiddenFor(a => a.Email)
+                            @Html.HiddenFor(a => a.ProfilePic, new { id = "image" })
+                            <input type="submit" class="btn btn-outline-primary" value="Update Profile" />
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @*Boostrap Card*@
+        <div class='card text-center border-success'>
+            <div class="card-header text-primary">
+                <h1 class="card-title">Profile</h1>
+            </div>
+            <div class="card-body text-success">
+                <img class="rounded-pill" style="height: 5rem;" src="~/images/profile/@Model.ProfilePic"
+                    alt="Profile Picture" />
+                <h3 class="card-text text-success">@Model.Name</h3>
+                <h5 class="card-text text-success">@Model.Email</h5>
+            </div>
+            <div class="card-footer text-success" style="margin-top: 1rem;">
+                <button class="btn btn-outline-success" onclick="updateProfileModal()">Update profile</button>
+                <button class="btn btn-outline-success" onclick="updatePasswordModal()">Update Password</button>
+            </div>
+        </div>
+        <script>
+            function updatePassword(){
+                let oldPassword=document.getElementById("oldPwd").value
+                let newPassword=document.getElementById("newPwd").value
+                let confirmPassword=document.getElementById("confirmPwd").value
+                document.getElementById("oldPwd").value=''
+                document.getElementById("newPwd").value=''
+                document.getElementById("confirmPwd").value=''
+
+                if(oldPassword==='' || newPassword=='' || confirmPassword==''){
+                    let errorModal = new bootstrap.Modal(document.querySelector('#errorModal'), {
+                            keyboard: false
+                    })
+                    let modalTitle=document.querySelector('#pwdErrTitle')
+                    document.querySelector('#pwdErrMsg').innerHTML="Please enter password."
+                    modalTitle.innerHTML="Invalid Password!"
+                    errorModal.show();
+                    return;
+                }
+
+                $.ajax({
+                    url:'/User/UpdatePassword',
+                    type:'POST',
+                    data:{OldPassword:oldPassword,NewPaswword:newPassword,ConfirmPassword:confirmPassword},
+                    success:function(response){
+                        let errorModal = new bootstrap.Modal(document.querySelector('#errorModal'), {
+                            keyboard: false
+                        })
+                        let modalTitle=document.querySelector('#pwdErrTitle')
+                        document.querySelector('#pwdErrMsg').innerHTML=response.msg
+                        if(response.status==="failed"){
+                            modalTitle.innerHTML="Invalid Password!"
+                        }else{
+                            modalTitle.innerHTML="Success!"
+                        }
+                        errorModal.show();
+                    }
+                })
+            }
+            function updateProfileModal() {
+                let updateProfileModelElement = new bootstrap.Modal(document.querySelector('#updateProfileModel'), {
+                    keyboard: false
+                })
+                updateProfileModelElement.show()
+            }
+
+            function updatePasswordModal(){
+                let updatePasswordModelElement = new bootstrap.Modal(document.querySelector('#updatePasswordModal'), {
+                    keyboard: false
+                })
+                updatePasswordModelElement.show()
+            }
+
+            //function for adding class "selected" in which user select's the image
+            function selectedImageChecker() {
+                const imageName = document.getElementById('image').value.split('.')[0];
+                const imgCount = imageName[imageName.length - 1];
+                console.log(imgCount)
+                console.log(imageName)
+                for (let i = 1; i < 10; i++) {
+                    if (i != imgCount) {
+                        document.querySelector(`#img${i}`).classList.remove('selected');
+                    } else {
+                        document.querySelector(`#img${i}`).classList.add('selected')
+                    }
+                }
+            }
+
+            //for adding event listner for checking the selected image
+            for (let i = 1; i < 10; i++) {
+                document.querySelector(`#img${i}`).addEventListener('click', () => {
+                    document.getElementById('image').setAttribute("value", `img${i}.png`);
+                    selectedImageChecker();
+                })
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                selectedImageChecker()
+            })
+        </script>
+</body>
+
+</html>

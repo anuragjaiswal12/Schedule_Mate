@@ -1,0 +1,148 @@
+@using Schedule_Mate.Models
+@using System.Text.Json
+
+@{
+    Layout = "StatsticsLayout";
+    ViewBag.Title = "Statstics";
+}
+
+@model List<CollectionDailyTask>
+
+@{
+    int[] taskperArray = new int[Model.Count];
+    DateTime[] dateArray = new DateTime[Model.Count];
+    int count = 0;
+    List<string> schedule = new List<string>();
+    List<int> scheduleCnt = new List<int>();
+
+    foreach (CollectionDailyTask task in Model)
+    {
+        List<TaskDataModel> taskList = JsonSerializer.Deserialize<List<TaskDataModel>>(task.TaskList);
+        int totalTask = taskList.Count;
+        int compmleteCount = 0;
+        int index = schedule.IndexOf(task.ScheduleName);
+        if (index >= 0)
+        {
+            scheduleCnt[index] += 1;
+        }
+        else
+        {
+            schedule.Add(task.ScheduleName);
+            scheduleCnt.Add(1);
+        }
+        foreach (TaskDataModel data in taskList)
+        {
+            if (data.status == "Completed")
+            {
+                compmleteCount++;
+            }
+        }
+        int completePer = (compmleteCount * 100) / totalTask;
+        taskperArray[count] = completePer;
+        dateArray[count] = task.TaskDate;
+        count++;
+    }
+    string[] scheduleNames = new string[schedule.Count];
+    int[] scheduleNameCnt = new int[scheduleCnt.Count];
+    for (int i = 0; i < schedule.Count; i++)
+    {
+        scheduleNames[i] = schedule[i];
+        scheduleNameCnt[i] = scheduleCnt[i];
+    }
+
+    string progress = JsonSerializer.Serialize(taskperArray);
+    string date = JsonSerializer.Serialize(dateArray);
+
+    string scheduleName = JsonSerializer.Serialize(scheduleNames);
+    string cnt = JsonSerializer.Serialize(scheduleNameCnt);
+}
+
+@if (Model.Count == 0)
+{
+    <div class="error-div">
+        <div class="alert alert-warning" role="alert">
+            No Task details found! please complete task to view Statstics!
+        </div>
+        <div>
+            <a href="/User/Schedule" class="btn btn-outline-primary">Go to Schedule</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="main">
+        <div class="row d-flex justify-content-center align-items-center" style="width: 100%;">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header"></div>
+                    <div class="card-body">
+                        <div id="barchart"></div>
+                    </div>
+                    <div class="card-footer"></div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header"></div>
+                    <div class="card-body">
+                        <div id="piechart"></div>
+                    </div>
+                    <div class="card-footer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.load('current', { 'packages': ['bar'] });
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            const scheduleNameArrayJs = @Html.Raw(scheduleName);
+            const scheduleCntArrayJs = @Html.Raw(cnt);
+
+            const pieChartDataArray = [['Task', 'Hours per Day'],];
+
+            for (let i = 0; i < scheduleNameArrayJs.length; i++) {
+                pieChartDataArray.push([scheduleNameArrayJs[i], scheduleCntArrayJs[i]]);
+            }
+
+            var pieChartData = google.visualization.arrayToDataTable(pieChartDataArray);
+
+            var pieChartOptions = {
+                title: 'Daily schedules'
+            };
+
+            var pieChart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+            pieChart.draw(pieChartData, pieChartOptions);
+
+            const taskArrayJs = @Html.Raw(progress);
+            const dateArrayJs = @Html.Raw(date);
+
+            barChartDataArray = [['Date', 'Completed Task in %', { role: 'style' }],];
+
+
+            for (let i = 0; i < taskArrayJs.length; i++) {
+                barChartDataArray.push([dateArrayJs[i].slice(0, 10), taskArrayJs[i], 'color:#76A7FA'])
+            }
+
+            var barChartData = google.visualization.arrayToDataTable(barChartDataArray);
+
+            var barChartOptions = {
+                chart: {
+                    title: 'Company Performance',
+                    subtitle: 'Sales, Expenses, and Profit: 2014-2017',
+                },
+                bars: 'vertical' // Required for Material Bar Charts.
+            };
+
+            var barChart = new google.charts.Bar(document.getElementById('barchart'));
+
+            barChart.draw(barChartData, google.charts.Bar.convertOptions(barChartOptions));
+        }
+    </script>
+}

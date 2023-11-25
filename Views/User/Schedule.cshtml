@@ -1,0 +1,436 @@
+@using System.Text.Json
+
+@{
+    ViewBag.Title = "Schedule";
+}
+
+@model List<CollectionSchedule>
+<style>
+    .date-control {
+        display: initial;
+        width: 60%;
+    }
+</style>
+@if (Model.Count == 0)
+{
+    <div class="error-div">
+        <div class="alert alert-warning" role="alert">
+            No Schedule found! please enter atleast 1 Schedule to view or manage schedule or manage task!
+        </div>
+        <div>
+            <a href="/User/AddSchedule" class="btn btn-outline-primary">Add Schedule</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="modal fade" id="addTaskModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Add Task!</h1>
+                </div>
+                <div class="modal-body">
+                    <label for="tskName" class="form-label">Task Name</label>
+                    <input type="text" id="addTskName" class="form-control" placeholder="Task Name" />
+                    <label for="Duration" class="form-label">Duration</label>
+                    <div class="input-group mb-3">
+                        <input type="number" class="form-control" id="addTaskHours" value="0" placeholder="hh">
+                        <span class="input-group-text">hh</span>
+                        <input type="text" class="form-control" id="addTaskMins" value="0" placeholder="mm">
+                        <span class="input-group-text">mm</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" id="addSchId" />
+                    <input type="hidden" id="addCount" />
+                    <button class="btn btn-outline-primary" data-bs-dismiss="modal" onclick="addTask()">Add
+                        Task</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="updateTaskModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Update Task!</h1>
+                </div>
+                <div class="modal-body">
+                    <label for="tskName" class="form-label">Task Name</label>
+                    <input type="text" id="tskName" class="form-control" placeholder="Task Name" />
+                    <label for="Duration" class="form-label">Duration</label>
+                    <div class="input-group mb-3">
+                        <input type="number" class="form-control" id="taskHours" value="0" placeholder="hh">
+                        <span class="input-group-text">hh</span>
+                        <input type="text" class="form-control" id="taskMins" value="0" placeholder="mm">
+                        <span class="input-group-text">mm</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" id="schId" />
+                    <input type="hidden" id="index" />
+                    <input type="hidden" id="count" />
+                    <button class="btn btn-outline-primary" data-bs-dismiss="modal" onclick="updateTask()">Update
+                        Task</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Boostrap Modal for showing alert.*@
+    <div class="modal fade" id="errorModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel1"></h1>
+                </div>
+                <div class="modal-body">
+                    <p id='errMsg'></p>
+                </div>
+                <div class="modal-footer" id="actionModal"></div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <table class="table table-striped table-hover table-primary accordion">
+            <thead>
+                <tr>
+                    @* <th scope="col">Schedule Id</th> *@
+                    <th scope="col">Schedule Name</th>
+                    <th scope="col">Actions</th>
+                    <th scope="col">Select</th>
+                    <th scope="col">Add Task</th>
+                    <th scope="col">Expand</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int count = 0;
+                }
+                @foreach (CollectionSchedule schedule in Model)
+                {
+                    <tr id="@schedule.ScheduleId">
+                        @* <th scope="row">@schedule.ScheduleId</th> *@
+                        <td>@schedule.ScheduleName</td>
+                        <td>
+                            <button onclick="openEditDilougeBox('@schedule.ScheduleId')"
+                                class="btn btn-outline-warning">Edit</button>
+                            <button onclick="deleteSchedule('@schedule.ScheduleId')"
+                                class="btn btn-outline-danger">Delete</button>
+                        </td>
+                        <td>
+                            <input type="date" class="form-control date-control" id="date_@count" />
+                            <button
+                                onclick="selectSchedule('@schedule.ScheduleId',document.getElementById('date_@count').value)"
+                                class="btn btn-outline-primary">Select</button>
+                        </td>
+                        <td>
+                            <button onclick="openAddTaskModel('@schedule.ScheduleId',@count)"
+                                class="btn btn-outline-success">Add Task</button>
+                        </td>
+                        <td>
+                            <div class="accordion" id="accordion_@count">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapse_@count" aria-expanded="true"
+                                            aria-controls="collapse_@count">
+                                        </button>
+                                    </h2>
+                                </div>
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr id="collapse_@count" class="accordion-collapse collapse" data-bs-parent="#accordion_@count">
+                        <td colspan="5">
+                            <div class="accordion-body">
+                                @{
+                                    List<TaskModel> taskList = JsonSerializer.Deserialize<List<TaskModel>>(schedule.TaskList);
+                                    <table class="table table-striped table-hover table-warning accordion">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Task Name</th>
+                                                <th scope="col">Duration</th>
+                                                <th scope="col">Update</th>
+                                                <th scope="col">Delete</th>
+                                            </tr>
+                                        </thead>
+                                        @{
+                                            int index = 0;
+                                        }
+                                        @foreach (TaskModel task in taskList)
+                                        {
+                                            string trId = count + "_" + index;
+                                            <tr id="@trId">
+                                                <td>@task.taskName</td>
+                                                <td>@task.duration</td>
+                                                <td><button class="btn btn-outline-success"
+                                                        onclick="openUpdateTaskModel('@schedule.ScheduleId',@index,@count,'@task.taskName','@task.duration')">Update
+                                                        Task</button></td>
+                                                <td><button class="btn btn-outline-danger"
+                                                        onclick="deleteTask('@schedule.ScheduleId',@index,@count)">Delete Task</button>
+                                                </td>
+                                            </tr>
+                                            index++;
+                                        }
+                                    </table>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    count++;
+                }
+            </tbody>
+        </table>
+        <div id="floating-button" class='bg-primary' onclick="window.location.href='/User/AddSchedule'">
+            <p class="plus">+</p>
+        </div>
+    </div>
+
+    @*jQuery CDN*@
+    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
+        integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+
+    <script>
+        function openUpdateTaskModel(id, index, count, name, dur) {
+            document.getElementById('schId').value = id
+            document.getElementById('index').value = index
+            document.getElementById('count').value = count
+            document.getElementById('tskName').value = name
+            let durData = dur.split(' ')
+            document.querySelector('#taskHours').value = durData[0]
+            document.querySelector('#taskMins').value = durData[3]
+            let updateTaskModal = new bootstrap.Modal(document.querySelector('#updateTaskModal'), {
+                keyboard: false
+            })
+
+            updateTaskModal.show()
+
+        }
+
+        function openAddTaskModel(id, count) {
+            document.getElementById('addSchId').value = id
+            document.getElementById('addCount').value = count
+            let addTaskModal = new bootstrap.Modal(document.querySelector('#addTaskModal'), {
+                keyboard: false
+            })
+
+            addTaskModal.show()
+
+        }
+
+        function addTask() {
+            let id = document.getElementById('addSchId').value
+            let count = document.getElementById('addCount').value
+            let taskName = document.getElementById('addTskName').value;
+            let taskHours = document.querySelector('#addTaskHours').value
+            let taskMins = document.querySelector('#addTaskMins').value
+
+            let flag = true
+
+            let errMsgElement = document.querySelector('#errMsg')
+            let modalFooter = document.getElementById("actionModal")
+            let errTitleElement = document.querySelector('#staticBackdropLabel1')
+
+            if (taskName == '') {
+                errTitleElement.innerHTML = 'Invalid Task name!'
+                errMsgElement.innerHTML = `Please enter valid task name.`
+                flag = false
+            }
+            else if (taskHours === '') {
+                errTitleElement.innerHTML = 'Invalid task duration!'
+                errMsgElement.innerHTML = 'Please enter valid task duration.'
+                flag = false
+            } else if (taskMins === '') {
+                errTitleElement.innerHTML = 'Invalid task duration!'
+                errMsgElement.innerHTML = 'Please enter valid task duration.'
+                flag = false
+            } else if (Number(taskHours) <= 0 && Number(taskMins) <= 0) {
+                errTitleElement.innerHTML = 'Invalid Duration!'
+                errMsgElement.innerHTML = 'Please enter valid time duration.'
+                flag = false
+            } else if (Number(taskHours) >= 12 && Number(taskMins) > 0) {
+                errTitleElement.innerHTML = 'Invalid Duration!'
+                errMsgElement.innerHTML = 'Time duration can not exceed 12 hours.'
+                flag = false
+            }
+            if (!flag) {
+                modalFooter.innerHTML = `<button data-bs-dismiss="modal" class="btn btn-outline-primary">Ok</button>`
+
+                let errorModal = new bootstrap.Modal(document.querySelector('#errorModal'), {
+                    keyboard: false
+                })
+
+                errorModal.show()
+                return;
+            }
+
+            taskMinToHour = Math.floor(taskMins / 60)
+            taskMins = taskMins % 60
+            taskHours = Number(taskHours) + Number(taskMinToHour)
+
+            let duration = `${taskHours} Hour : ${taskMins} Minutes`;
+            $.ajax({
+                url: '/User/AddTask',
+                method: 'POST',
+                data: { ScheduleId: id, TaskName: taskName, Duration: duration },
+                success: function () {
+                    location.reload()
+                }
+            })
+        }
+
+        function updateTask() {
+            let id = document.getElementById('schId').value
+            let i = document.getElementById('index').value
+            let count = document.getElementById('count').value
+            let taskName = document.getElementById('tskName').value;
+            let taskHours = document.querySelector('#taskHours').value
+            let taskMins = document.querySelector('#taskMins').value
+
+            let flag = true
+
+            let errMsgElement = document.querySelector('#errMsg')
+            let modalFooter = document.getElementById("actionModal")
+            let errTitleElement = document.querySelector('#staticBackdropLabel1')
+
+            if (taskName == '') {
+                errTitleElement.innerHTML = 'Invalid Task name!'
+                errMsgElement.innerHTML = `Please enter valid task name.`
+                flag = false
+            }
+            else if (taskHours === '') {
+                errTitleElement.innerHTML = 'Invalid task duration!'
+                errMsgElement.innerHTML = 'Please enter valid task duration.'
+                flag = false
+            } else if (taskMins === '') {
+                errTitleElement.innerHTML = 'Invalid task duration!'
+                errMsgElement.innerHTML = 'Please enter valid task duration.'
+                flag = false
+            } else if (Number(taskHours) <= 0 && Number(taskMins) <= 0) {
+                errTitleElement.innerHTML = 'Invalid Duration!'
+                errMsgElement.innerHTML = 'Please enter valid time duration.'
+                flag = false
+            } else if (Number(taskHours) >= 12 && Number(taskMins) > 0) {
+                errTitleElement.innerHTML = 'Invalid Duration!'
+                errMsgElement.innerHTML = 'Time duration can not exceed 12 hours.'
+                flag = false
+            }
+            if (!flag) {
+                modalFooter.innerHTML = `<button data-bs-dismiss="modal" class="btn btn-outline-primary">Ok</button>`
+
+                let errorModal = new bootstrap.Modal(document.querySelector('#errorModal'), {
+                    keyboard: false
+                })
+
+                errorModal.show()
+                return;
+            }
+
+            taskMinToHour = Math.floor(taskMins / 60)
+            taskMins = taskMins % 60
+            taskHours = Number(taskHours) + Number(taskMinToHour)
+
+            let duration = `${taskHours} Hour : ${taskMins} Minutes`;
+            $.ajax({
+                url: '/User/UpdateTask',
+                method: 'POST',
+                data: { ScheduleId: id, Index: i, TaskName: taskName, Duration: duration },
+                success: function () {
+                    document.getElementById(`${count}_${i}`).children[0].innerHTML = taskName;
+                    document.getElementById(`${count}_${i}`).children[1].innerHTML = duration;
+                }
+            })
+        }
+
+        function deleteTask(id, i, count) {
+            $.ajax({
+                url: '/User/DeleteTask',
+                method: 'POST',
+                data: { scheduleId: id, index: i },
+                success: function () {
+                    document.getElementById(`${count}_${i}`).remove()
+                }
+            });
+        }
+        function selectSchedule(id, date) {
+            let errMsgElement = document.querySelector('#errMsg')
+            let modalFooter = document.getElementById("actionModal")
+            let errTitleElement = document.querySelector('#staticBackdropLabel1')
+            if (date == '') {
+                errTitleElement.innerHTML = 'Invalid Date!'
+                errMsgElement.innerHTML = `Please select the date.`
+                modalFooter.innerHTML = `<button data-bs-dismiss="modal" class="btn btn-outline-primary">Ok</button>`
+
+                let errorModal = new bootstrap.Modal(document.querySelector('#errorModal'), {
+                    keyboard: false
+                })
+
+                errorModal.show()
+            } else {
+                $.ajax({
+                    url: '/User/SelectSchedule/',
+                    type: "POST",
+                    data: { scheduleId: id, Date: date },
+                    success: function () {
+                        errTitleElement.innerHTML = 'Selected successfully!'
+                        errMsgElement.innerHTML = `Your schedule for ${date} has been selected successfully`
+                        modalFooter.innerHTML = `<button data-bs-dismiss="modal" class="btn btn-outline-primary">Ok</button>`
+
+                        let errorModal = new bootstrap.Modal(document.querySelector('#errorModal'), {
+                            keyboard: false
+                        })
+
+                        errorModal.show()
+                    }
+                });
+            }
+        }
+        function deleteSchedule(id) {
+            $.ajax({
+                url: `/User/DeleteSchedule/`,
+                type: "POST",
+                data: { scheduleId: id },
+                success: function () {
+                    document.getElementById(`${id}`).innerHTML = "";
+                }
+            });
+        }
+
+        function updateName(id) {
+            let newName = document.getElementById('scheduleName').value
+            if (newName === '') return;
+            $.ajax({
+                url: '/User/UpdateScheduleName/',
+                type: "POST",
+                data: { scheduleId: id, scheduleName: newName },
+                success: function () {
+                    document.getElementById(id).children[0].innerHTML = `${newName}`
+                }
+            });
+        }
+
+        function openEditDilougeBox(SId) {
+            let errMsgElement = document.querySelector('#errMsg')
+            let modalFooter = document.getElementById("actionModal")
+            let errTitleElement = document.querySelector('#staticBackdropLabel1')
+            let name = document.getElementById(`${SId}`).children[0].innerHTML
+            errMsgElement.innerHTML = `<div><label for="newName" class="form-label">Schedule Name</label><input type="text" class="form-control" placeholder="Schedule Name" id="scheduleName" /></div>`
+            errTitleElement.innerHTML = 'Update Schedule Name'
+            modalFooter.innerHTML = `<button onclick="updateName('${SId}')" data-bs-dismiss="modal" class="btn btn-outline-primary" id="newName">Ok</button>`
+            document.getElementById('scheduleName').value = name
+            let errorModal = new bootstrap.Modal(document.querySelector('#errorModal'), {
+                keyboard: false
+            })
+
+            errorModal.show()
+        }
+    </script>
+}

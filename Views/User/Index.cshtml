@@ -1,0 +1,108 @@
+@using Schedule_Mate.Models
+@using System.Text.Json
+
+@{
+    ViewBag.Title = "Dashboard";
+}
+
+@model CollectionDailyTask
+
+@if (Model == null)
+{
+    <div class="error-div">
+        <div class="alert alert-warning" role="alert">
+            No Schedule found! please select Schedule for complete the task
+        </div>
+        <div>
+            <a href="/User/Schedule" class="btn btn-outline-primary">View Schedule</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="modal fade" id="errorModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Success!</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id='errMsg'>Task status updated successfully.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <table class="table table-hover table-primary accordion">
+            <thead>
+                <tr>
+                    <th scope="col">Task Name</th>
+                    <th scope="col">Duration</th>
+                    <th scope="col">Status</th>
+                    <th scope="col" colspan="2">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int count = 0;
+                    List<TaskDataModel> taskData = JsonSerializer.Deserialize<List<TaskDataModel>>(Model.TaskList);
+                }
+                @foreach (TaskDataModel task in taskData)
+                {
+                    <tr id="@count">
+                        <td>@task.taskName</td>
+                        <td>@task.duration</td>
+                        <td>@task.status</td>
+                        @{
+                            if (task.status == "Completed" || task.status == "Skipped")
+                            {
+                                <td colspan="2"><h3 class="text-success">@task.status</h3></td>
+                            }
+                            else
+                            {
+                                <td>
+                                    <button onclick="changeTaskStatus(@count,'Completed')" class="btn btn-outline-success">Done</button>
+                                </td>
+                                <td>
+                                    <button onclick="changeTaskStatus(@count,'Skipped')" class="btn btn-outline-danger">Skip</button>
+                                </td>
+                            }
+                        }
+                    </tr>
+                    count++;
+                }
+            </tbody>
+        </table>
+    </div>
+    <script>
+        function changeTaskStatus(i, action) {
+            let successModal = new bootstrap.Modal(document.querySelector('#errorModal'), {
+                keyboard: false
+            })
+            $.ajax({
+                url: '/User/UpdateTaskStatus/',
+                type: "POST",
+                data: { index: i, status: action },
+                success: function () {
+                    successModal.show()
+                    document.getElementById(`${i}`).children[4].remove()
+                    document.getElementById(`${i}`).children[3].remove()
+                    let element=document.createElement("td")
+                    element.colSpan=2
+                    let h3=document.createElement("h3")
+                    h3.textContent=`${action}`
+                    h3.classList.add('text-success')
+                    element.append(h3)
+                    document.getElementById(`${i}`).append(element)
+                    document.getElementById(`${i}`).children[2].innerHTML=`${action}`
+                },
+            });
+        }
+    </script>
+}
